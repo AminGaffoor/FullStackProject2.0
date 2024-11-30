@@ -1,10 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
-
+const authRoutes = require('./routes/authRoutes');
+const { protect } = require('./Middleware/authMiddleware'); // Middleware for authentication
 const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+require('dotenv').config();
 
 const app = express();
 const PORT = 5000;
@@ -23,9 +24,13 @@ mongoose
   .catch((err) => console.error('Error connecting to MongoDB Atlas:', err));
 
 // Routes
-app.use('/api/products', productRoutes);
-app.use('/api/cart', cartRoutes);
+app.use('/api/auth', authRoutes); // Public auth routes
+app.use('/api/products', productRoutes); // Public product routes
 
+// Protected routes for cart
+app.use('/api/cart', protect, cartRoutes);
+
+// Health check route
 app.get('/', (req, res) => {
   res.send('Backend is running...');
 });
