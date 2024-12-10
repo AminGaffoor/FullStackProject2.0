@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
@@ -13,6 +14,11 @@ const PORT = 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname,"./Client", 'build')));
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, "./Client",'build', 'index.html'));
+});
+
 
 // MongoDB Connection
 mongoose
@@ -31,9 +37,9 @@ app.use('/api/products', productRoutes); // Public product routes
 app.use('/api/cart', protect, cartRoutes);
 
 // Health check route
-app.get('/', (req, res) => {
-  res.send('Backend is running...');
-});
+// app.get('/', (req, res) => {
+//   res.send('Backend is running...');
+// });
 
 // Start the Server
 app.listen(PORT, () => {
